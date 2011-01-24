@@ -110,11 +110,11 @@ class MinesGame(boardSize: Int) {
 
     lazy val board: GameBoard = new GameBoard(boardSize)
 
-    def finished: Boolean = gameStatus(!_.revealed)
+    def finished: Boolean = squaresStatus(!_.revealed)
 
-    def won: Boolean = gameStatus(s => !s.revealed && !s.revealed)
+    def won: Boolean = squaresStatus(s => !s.revealed && s.mined)
 
-    private def gameStatus(f: (Square) => Boolean) = {
+    private def squaresStatus(f: (Square) => Boolean) = {
         (for (i <- Iterator.range(0, boardSize); j <- Iterator.range(0, boardSize); if f(board.square(i, j))) yield board.square(i, j)).size == boardSize
     }
 }
