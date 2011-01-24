@@ -31,6 +31,16 @@ public class MinesGameGUI extends JFrame {
         
         setVisible(true);
     }
+    
+    private void updateAll() {
+    	for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+            	((SquareKeyListener) buttons[i][j].getKeyListeners()[0]).updateText();
+            	buttons[i][j].setVisible(false);
+            	buttons[i][j].setVisible(true);
+            }
+    	}
+    }
 
     private class SquareKeyListener implements KeyListener {
 
@@ -55,42 +65,47 @@ public class MinesGameGUI extends JFrame {
 
 		@Override
 		public void keyPressed(KeyEvent ke) {
+			JButton b = button;
 			if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
 				if (j != 0) {
-					buttons[i][j-1].requestFocus();
+					b = buttons[i][j-1];//.requestFocus();
 				}
 			} else if (ke.getKeyCode() == KeyEvent.VK_RIGHT) {
 				if (j != (BOARD_SIZE - 1)) {
-					buttons[i][j+1].requestFocus();
+					b = buttons[i][j+1];//.requestFocus();
 				}
 			} else if (ke.getKeyCode() == KeyEvent.VK_UP) {
 				if (i != 0) {
-					buttons[i-1][j].requestFocus();
+					b = buttons[i-1][j];//.requestFocus();
 				}
 			} else if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
 				if (i != (BOARD_SIZE - 1)) {
-					buttons[i+1][j].requestFocus();
+					b = buttons[i+1][j];//.requestFocus();
 				}
 			} else if (ke.getKeyCode() == KeyEvent.VK_F) {
 				square.flag_$eq(!square.flag());
+				updateText();
 			} else if (ke.getKeyCode() == KeyEvent.VK_SPACE) {
 				try {
-				square.reveal();
+					square.reveal();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				updateAll();
 			} else if (ke.getKeyCode() == KeyEvent.VK_S) {
 				square.revealNeighbours();
-				for (JButton[] buttonLine : buttons) {
+				updateAll();
+				/*for (JButton[] buttonLine : buttons) {
 					for (JButton b : buttonLine) {
 						((SquareKeyListener) b.getKeyListeners()[0]).updateText();
 						b.setVisible(false);
 						b.setVisible(true);
 					}
 				}
-				button.requestFocus();
+				button.requestFocus();*/
 			}
-			updateText();
+			//updateText();
+			b.requestFocus();
 		}
 
 		@Override

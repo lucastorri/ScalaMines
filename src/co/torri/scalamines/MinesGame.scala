@@ -28,10 +28,13 @@ case class Square(mined: Boolean, position: (Int, Int)) {
     @throws(classOf[BombExplodedException])
     def reveal: Unit = {
         if (mined) throw new BombExplodedException
-        if (!_flag) _revealed = true
+        if (!_flag) {
+        	_revealed = true
+        	if (#* == 0) revealNeighbours
+        }
     }
-    def revealNeighbours: Unit = if (_revealed && #* == #^) _neighbours.foreach(n => if (!n._2._flag) n._2.reveal)
-
+    def revealNeighbours: Unit = if (_revealed && #* == #^) _neighbours.foreach(n => if (!n._2._flag && !n._2.revealed) n._2.reveal)
+    
     def #+(square: Square): Unit = {
         //TODO: create a match option Neighbour
         if (_neighbours.contains(square.position) || abs(square.position._1 - position._1) > 1 && abs(square.position._2 - position._2) > 1 || square.position == position) {

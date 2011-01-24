@@ -253,6 +253,22 @@ class MinesGameTest extends Spec with ShouldMatchers {
             	square.flag = true
             	square.flag should be (false)
             }
+            
+            it("should open empty neighbours recursively")  {
+            	var square1 = Square(false, (0, 0))
+            	var square2 = Square(false, (1, 1))
+            	var square3 = Square(false, (2, 2))
+            	
+            	square1 #+ square2
+            	square2 #+ square1
+            	square2 #+ square3
+            	square3 #+ square2
+            	
+            	square1.reveal
+            	square1 should be ('revealed)
+            	square2 should be ('revealed)
+            	square3 should be ('revealed)
+            }
         }
     }
 }
