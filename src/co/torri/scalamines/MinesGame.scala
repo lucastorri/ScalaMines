@@ -19,22 +19,21 @@ class InvalidNeighbourException extends MinesGameException
 case class Square(mined: Boolean, position: (Int, Int)) {
     private var _revealed = false
     private var _neighbours = Map[(Int, Int), Square]()
+    
     private var _flag = false;
     def flag_=(v: Boolean): Unit = if (!_revealed) _flag = v
     def flag = _flag
-    
-    def revealed = _revealed
 
+    def revealed = _revealed
     @throws(classOf[BombExplodedException])
     def reveal: Unit = {
+        if (_flag) return
+        _revealed = true
         if (mined) throw new BombExplodedException
-        if (!_flag) {
-        	_revealed = true
-        	if (#* == 0) revealNeighbours
-        }
+        else if (#* == 0) revealNeighbours
     }
     def revealNeighbours: Unit = if (_revealed && #* == #^) _neighbours.foreach(n => if (!n._2._flag && !n._2.revealed) n._2.reveal)
-    
+
     def #+(square: Square): Unit = {
         //TODO: create a match option Neighbour
         if (_neighbours.contains(square.position) || abs(square.position._1 - position._1) > 1 && abs(square.position._2 - position._2) > 1 || square.position == position) {
@@ -46,15 +45,15 @@ case class Square(mined: Boolean, position: (Int, Int)) {
     def #*(): Int = _neighbours.filter((m) => m._2.mined).size
     def #?(): Int = _neighbours.size
     def #^(): Int = _neighbours.filter((m) => m._2._flag).size
-    
+
     override def toString = {
-    	if (_revealed) {
-    		#*.toString
-    	} else if (_flag) {
-    		"F"
-    	} else {
-    		""
-    	}
+        if (_revealed) {
+            if (mined) "*" else #*.toString 
+        } else if (_flag) {
+            "F"
+        } else {
+            ""
+        }
     }
 }
 
@@ -100,11 +99,9 @@ class GameBoard(boardSize: Int) {
     def size: SquarePosition = (boardSize, boardSize)
 
     def square(position: SquarePosition): Square = position match { case (i, j) => _squares(i)(j) }
-    
+
     def getSquare(i: Int, j: Int): Square = _squares(i)(j)
-    
-    def squares = _squares
-    
+
 }
 
 class MinesGame(boardSize: Int) {
@@ -112,15 +109,12 @@ class MinesGame(boardSize: Int) {
     type SquarePosition = (Int, Int)
 
     lazy val board: GameBoard = new GameBoard(boardSize)
-    
-    def getBoard = board
-    
-    def finished: Boolean = {
-    	(for (i <- Iterator.range(0, boardSize); j <- Iterator.range(0, boardSize); if !board.square(i,j).revealed) yield board.square(i,j)).size == boardSize
-    }
-    	
-    def won: Boolean = {
-    	finished &&
-    	(for (i <- Iterator.range(0, boardSize); j <- Iterator.range(0, boardSize); if !board.square(i,j).revealed && board.square(i,j).mined) yield board.square(i,j)).size == boardSize
+
+    def finished: Boolean = gameStatus(!_.revealed)
+
+    def won: Boolean = gameStatus(s => !s.revealed && !s.revealed)
+
+    private def gameStatus(f: (Square) => Boolean) = {
+        (for (i <- Iterator.range(0, boardSize); j <- Iterator.range(0, boardSize); if f(board.square(i, j))) yield board.square(i, j)).size == boardSize
     }
 }

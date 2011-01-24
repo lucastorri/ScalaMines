@@ -23,7 +23,7 @@ public class MinesGameGUI extends JFrame {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 JButton newButton = new JButton();
-                newButton.addKeyListener(new SquareKeyListener(i, j, game.getBoard().getSquare(i,j), newButton));
+                newButton.addKeyListener(new SquareKeyListener(i, j, game.board().getSquare(i,j), newButton));
                 buttons[i][j] = newButton;
                 add(newButton);
             }

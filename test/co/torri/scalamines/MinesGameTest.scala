@@ -245,6 +245,10 @@ class MinesGameTest extends Spec with ShouldMatchers {
                 square.reveal
                 square.flag = true
                 square.toString should be("2")
+                
+                square = Square(true, (1,2))
+                evaluating { square.reveal } should produce[BombExplodedException]
+                square.toString should be ("*")
             }
 
             it("should not be able to change flag value after it was revealed") {
